@@ -100,17 +100,8 @@ else
     aasdk=true
     gstreamer=true
     openauto=true
-    dash=true
     h264bitstream=true
-    pulseaudio=false
-    bluez=false
-    ofono=false
-    if [ $isRpi = true ]; then
-      pulseaudio=true
-      bluez=true
-      ofono=false # Skip Ofono due to issue with Bluetooth HSP
-    fi
-fi
+    pulseaudio=true
 
 script_path=$(dirname "$(realpath -s "$0")")
 echo "Script directory is $script_path"
@@ -138,8 +129,6 @@ dependencies=(
 "pulseaudio-module-bluetooth"
 "librtaudio-dev"
 "librtaudio6"
-"libkf5bluezqt-dev"
-"libtag1-dev"
 "qml-module-qtquick2"
 "libglib2.0-dev"
 "libgstreamer1.0-dev"
@@ -222,53 +211,6 @@ if [ $pulseaudio = false ]
     sudo ldconfig
     # copy configs and force an exit 0 just in case files are identical (we don't care but it will make pimod exit)
     sudo cp /usr/share/pulseaudio/alsa-mixer/profile-sets/* /usr/local/share/pulseaudio/alsa-mixer/profile-sets/
-    cd ..
-fi
-
-
-###############################  ofono  #########################
-if [ $ofono = false ]
-  then
-    echo -e skipping ofono '\n'
-  else
-    echo Installing ofono
-    sudo apt-get install -y ofono
-    if [[ $? -eq 0 ]]; then
-        echo -e ofono Installed ok '\n'
-    else
-        echo Package failed to install with error code $?, quitting check logs above
-        exit 1
-    fi
-    echo "Enabling Ofono in Pulse config"
-    sudo sed -i 's/load-module module-bluetooth-discover/load-module module-bluetooth-discover headset=ofono/g' /etc/pulse/default.pa
-    sudo tee -a /etc/pulse/default.pa <<'EOT'
-
-### Echo cancel and noise reduction
-.ifexists module-echo-cancel.so
-load-module module-echo-cancel aec_method=webrtc source_name=ec_out sink_name=ec_ref
-set-default-source ec_out
-set-default-sink ec_ref
-.endif
-EOT
-fi
-
-###############################  bluez  #########################
-if [ $bluez = false ]
-  then
-    echo -e skipping bluez '\n'
-  else
-    #change to project root
-    cd $script_path
-
-    echo Installing bluez
-    sudo apt-get install -y libdbus-1-dev libudev-dev libical-dev libreadline-dev libjson-c-dev
-    wget www.kernel.org/pub/linux/bluetooth/bluez-5.63.tar.xz
-    tar -xvf bluez-5.63.tar.xz bluez-5.63/
-    rm bluez-5.63.tar.xz
-    cd bluez-5.63
-    ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --enable-library --disable-manpages --enable-deprecated
-    make
-    sudo make install
     cd ..
 fi
 
