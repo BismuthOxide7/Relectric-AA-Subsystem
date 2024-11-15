@@ -191,7 +191,7 @@ else
   sed -i 's/*imtu = 48;/*imtu = 60;/g' src/modules/bluetooth/backend-ofono.c
   sudo apt-get build-dep -y pulseaudio
   ./bootstrap.sh
-  make -j4
+  make -j2
   sudo make install
   sudo ldconfig
   # copy configs and force an exit 0 just in case files are identical (we don't care but it will make pimod exit)
@@ -231,7 +231,7 @@ else
   git apply $script_path/patches/aasdk_openssl-fips-fix.patch
   #build and install
   cmake $installArgs -DBUILD_SAMPLES=OFF -DUSE_CMAKE_TOOLCHAIN_FILE=OFF
-  make -j4
+  make -j2
   sudo make install
   cd ..
 fi
@@ -266,7 +266,7 @@ else
   mkdir -p build
   cd build
   cmake ..
-  make -j4
+  make -j2
   sudo make install
   cd ..
 fi
@@ -300,7 +300,7 @@ else
   echo Apply patches
   git apply $script_path/patches/openauto-qt-5.12-patch.patch
   cmake ..
-  make -j4
+  make -j2
   sudo make install
   cd ..
 fi
