@@ -23,35 +23,9 @@ display_help() {
     echo
 }
 
-# Check Distro version
-if [ -f /etc/os-release ]; then
-  OS_DISTRO=$(source /etc/os-release; echo ${PRETTY_NAME%% *})
-  if [ $OS_DISTRO = "Debian" ]; then
-    isDebian=true
-    #determine if script is being run on bullseye or above
-    read -d . DEBIAN_VERSION < /etc/debian_version
-    if (( $DEBIAN_VERSION > 10 )); then
-      echo Detected Debian version of Bullseye or above
-      BULLSEYE=true
-    else
-      echo Older version of Debian detected
-      BULLSEYE=false
-    fi
-  elif [ $OS_DISTRO = "Ubuntu" ]; then
-    isUbuntu=true
-    UBUNTU_VERSION=$(source /etc/os-release; echo ${VERSION_ID%% *} | cut -c1-2)
-    if (( $UBUNTU_VERSION >= 22 )); then
-      echo Detcted Ubuntu version of Jammy or above
-      JAMMY=true
-    else
-      echo Older version of Ubuntu detected.
-      JAMMY=false
-    fi
-  else
-    echo "Unsupported OS detected. Recommended Debian 12 or Ubuntu 22.04"
-    exit 1
-  fi
-fi
+# Formerly checked Distro version, has been overridden
+echo "Assumed Debian version of Bullseye or above"
+BULLSEYE=true
 
 #check if /etc/rpi-issue exists, if not set the install Args to be false
 if [ -f /etc/rpi-issue ]
@@ -71,6 +45,7 @@ if [[ $totalMem -lt 1900 ]]; then
   echo "$totalMem MB RAM detected"
   echo "You may run out of memory while compiling with less than 2GB"
   echo "Consider raising swap space or compiling on another machine"
+  echo "Installation will be attempted in 5 seconds"
   sleep 5;
 fi
 
@@ -609,95 +584,7 @@ else
   fi
   cd $script_path
 fi
+##############################################################
+echo "Install Complete"
+exit 0
 
-
-###############################  dash  #########################
-if [ $dash = false ]; then
-	echo -e Skipping dash'\n'
-else
-
-  #change to project root
-  cd $script_path
-
-  #create build directory
-  echo Creating dash build directory
-  mkdir build
-
-  if [[ $? -eq 0 ]]; then
-    echo -e dash build directory made
-  else
-    echo Unable to create dash build directory assuming it exists...
-  fi
-
-  cd build
-
-	echo -e Installing dash'\n'
-  echo Running CMake for dash
-  cmake ${installArgs} -DGST_BUILD=TRUE ../
-  if [[ $? -eq 0 ]]; then
-    echo -e Dash CMake OK'\n'
-  else
-    echo Dash CMake failed with error code $?
-    exit 1
-  fi
-
-  echo Running Dash make
-  make
-  
-  if [[ $? -eq 0 ]]; then
-      echo -e Dash make ok, executable can be found ../bin/dash
-      echo
-
-      #check and add usb rules for openauto if they dont exist
-      echo Checking if permissions exist
-      #udev rule to be created below, change as needed
-      FILE=/etc/udev/rules.d/51-dashusb.rules
-      if [[ ! -f "$FILE" ]]; then
-          # OPEN USB RULE, CREATE MORE SECURE RULE IF REQUIRED
-          echo "SUBSYSTEM==\"usb\", ATTR{idVendor}==\"*\", ATTR{idProduct}==\"*\", MODE=\"0660\", GROUP=\"plugdev\"" | sudo tee $FILE
-        if [[ $? -eq 0 ]]; then
-            echo -e Permissions created'\n'
-          else
-            echo -e Unable to create permissions'\n'
-        fi
-        else
-          echo -e Rules exists'\n'
-      fi
-    else
-      echo Dash make failed with error code $?
-      exit 1
-  fi
-  cd $script_path
-
-  #Raspberry Pi addons 
-  if $isRpi; then
-    read -p "View select Raspberry Pi enhancements? (y/N) " choice
-    if [[ $choice == "y" || $choice == "Y" ]]; then
-      ./rpi.sh
-    else
-      echo "Continuing"
-    fi
-  fi
-
-  #Autostart options
-  read -p "View autostart options? (y/N) " choice
-  if [[ $choice == "y" || $choice == "Y" ]]; then
-    ./autostart.sh
-  else
-    echo "Continuing"
-  fi
-
-  read -p "Build complete! Run application? (y/N) " choice
-  if [[ $choice == "y" || $choice == "Y" ]]; then
-    ./bin/dash
-    if [[ $? -eq 1 ]]; then
-      echo "Something went wrong! You may need to set up Xorg/X11"
-      exit 1
-    else
-      exit 0
-    fi
-  else
-     echo "Exiting. Check autostart.sh and rpi.sh for more options"
-     exit 0
-  fi
-fi
