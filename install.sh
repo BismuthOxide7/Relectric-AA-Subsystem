@@ -265,7 +265,7 @@ else
   cd gstreamer
   mkdir -p build
   cd build
-  cmake ..
+  cmake
   make -j2
   sudo make install
   cd ..
@@ -299,7 +299,7 @@ else
   # Apply patches
   echo Apply patches
   git apply $script_path/patches/openauto-qt-5.12-patch.patch
-  cmake ..
+  cmake
   make -j2
   sudo make install
   cd ..
