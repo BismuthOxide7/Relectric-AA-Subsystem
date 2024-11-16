@@ -175,7 +175,7 @@ fi
 if [ $pulseaudio = false ]; then
   echo -e skipping pulseaudio '\n'
 else
-  #change to project root
+  # Change to project root
   cd $script_path
 
   echo Preparing to compile and install pulseaudio
@@ -188,13 +188,13 @@ else
   git checkout tags/v12.99.3
   echo Applying imtu patch
   sed -i 's/*imtu = 48;/*imtu = 60;/g' src/modules/bluetooth/backend-native.c
-  sed -i 's/*imtu = 48;/*imtu = 60;/g' src/modules/bluetooth/backend-ofono.c
+  # Remove patch for backend-ofono
   sudo apt-get build-dep -y pulseaudio
   ./bootstrap.sh
   make -j2
   sudo make install
   sudo ldconfig
-  # copy configs and force an exit 0 just in case files are identical (we don't care but it will make pimod exit)
+  # Copy configs and force an exit 0 just in case files are identical (we don't care but it will make pimod exit)
   sudo cp /usr/share/pulseaudio/alsa-mixer/profile-sets/* /usr/local/share/pulseaudio/alsa-mixer/profile-sets/
   cd ..
 fi
@@ -203,10 +203,10 @@ fi
 if [ $aasdk = false ]; then
   echo -e Skipping aasdk '\n'
 else
-  #change to project root
+  # Change to project root
   cd $script_path
 
-  #clone aasdk
+  # Clone aasdk
   git clone $aasdkRepo
   if [[ $? -eq 0 ]]; then
     echo -e Aasdk Cloned ok '\n'
@@ -222,14 +222,14 @@ else
     fi
   fi
 
-  #change into aasdk folder
+  # Change into aasdk folder
   echo -e moving to aasdk '\n'
   cd aasdk
 
-  #apply set_FIPS_mode patch
+  # Apply set_FIPS_mode patch
   echo Apply set_FIPS_mode patch
   git apply $script_path/patches/aasdk_openssl-fips-fix.patch
-  #build and install
+  # Build and install
   cmake $installArgs -DBUILD_SAMPLES=OFF -DUSE_CMAKE_TOOLCHAIN_FILE=OFF
   make -j2
   sudo make install
@@ -256,7 +256,7 @@ else
     fi
   fi
 
-  #apply patches
+  # Apply patches
   cd gstreamer
   echo Apply patches to gstreamer
   git apply $script_path/patches/gstreamer-add-alsa-mixer-patch.patch
@@ -275,10 +275,10 @@ fi
 if [ $openauto = false ]; then
   echo -e skipping openauto '\n'
 else
-  #change to project root
+  # Change to project root
   cd $script_path
 
-  #clone openauto
+  # Clone openauto
   git clone $openautoRepo
   if [[ $? -eq 0 ]]; then
     echo -e OpenAuto Cloned ok '\n'
@@ -296,7 +296,7 @@ else
 
   cd openauto
   git submodule update --init --recursive
-  #apply patches
+  # Apply patches
   echo Apply patches
   git apply $script_path/patches/openauto-qt-5.12-patch.patch
   cmake ..
@@ -304,3 +304,11 @@ else
   sudo make install
   cd ..
 fi
+
+
+cd $script_path
+
+echo -e "\nAll requested components have been processed."
+
+echo "Script execution complete."
+exit 0
