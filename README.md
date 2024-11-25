@@ -20,6 +20,10 @@ cd ~/android_auto
 
 git clone https://github.com/BismuthOxide7/Relectric-AA-Subsystem
 
+cd Relectric-AA-Subsystem
+
+sudo chmod +x install.sh
+
 ./install.sh
 
 ```
