@@ -3,7 +3,7 @@
 
 The Relectric Android Auto subsytem relies on OpenAuto and the AASDK developped by f1xpl (https://github.com/f1xpl)
 
-This repository contains an installation script abriidged from https://github.com/openDsh/dash.
+This repository contains an installation script abridged from https://github.com/openDsh/dash.
 The script was modified to only install aasdk, openauto, and required dependencies. 
 
 ### THIS IS EXPERIMENTAL SOFTWARE AND NOT GUARANTEED TO WORK AT ALL
