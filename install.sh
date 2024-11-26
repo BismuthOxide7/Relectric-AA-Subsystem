@@ -1,3 +1,6 @@
+script=$(realpath -s "$0")
+script_path=$(dirname "$SCRIPT")
+
 ### dependencies #####
 dependencies=(
     "alsa-utils"
