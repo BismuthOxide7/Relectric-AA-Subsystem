@@ -1,5 +1,5 @@
-script=$(realpath -s "$0")
-script_path=$(dirname "$SCRIPT")
+script_path=$(dirname "$(realpath -s "$0")")
+echo "Script directory is $script_path"
 
 ### dependencies #####
 dependencies=(
@@ -69,12 +69,12 @@ cmake -DCMAKE_BUILD_TYPE=Release ../
 make -j2
 sudo make install
 
-echo AASDK installed'\n'
+echo AASDK installed
 
 #################### Openauto ###################################
 cd $script_path
 
-echo starting Openauto install'\n'
+echo starting Openauto install
 
 sudo apt-get -y install cmake build-essential git
 
@@ -88,3 +88,5 @@ cmake -DCMAKE_BUILD_TYPE=Release -DRPI3_BUILD=TRUE -DAASDK_INCLUDE_DIRS="../aasd
 make -j2
 
 sudo make install
+
+echo Install Finished
