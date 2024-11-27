@@ -31,7 +31,7 @@ sudo chmod +x install.sh
 The installation script may take some time to fetch the required packages and build the c++ source code into an executable binary. 
 When the installer is done (It will print ``` Install Finished ```), the android auto executable can be started using the following commands:
 ```
-cd ~/android_auto/openauto/bin
+cd ~/android_auto/Relectric-AA-Subsystem/openauto/bin
 
 autoapp
 ```
